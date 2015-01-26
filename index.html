@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+	<meta content="yes" name="apple-mobile-web-app-capable">
+	<meta content="yes" name="apple-touch-fullscreen">
+	<title>Sorter</title>
+	<link rel="stylesheet" href="./sorter.css">
+	<style type="text/css">
+	body{margin:0;padding:0;overflow-x:hidden;overflow-y:auto;}
+	.wrap{width:80%;margin:20px auto 0;}
+	.sorter-headline,.sorter-cell{width:33.3%;}
+	.id{padding-left:20px;}
+	.content{text-align:center;}
+	</style>
+</head>
+<body>
+
+<div class="wrap">
+
+
+	<div class="sorter">
+		<div class="sorter-head">
+			<div class="sorter-row">
+				<div class="sorter-item">
+					<div class="sorter-headline"><div class="id">ID</div></div>
+					<div class="sorter-headline"><div class="content">名称</div></div>
+					<div class="sorter-headline"><div class="content">简介</div></div>
+				</div>
+			</div>
+		</div>
+		<div class="sorter-body">
+			<div data-id="1" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">1</div></div>
+					<div class="sorter-cell"><div class="content">卫浴</div></div>
+					<div class="sorter-cell"><div class="content">卫浴简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<div data-id="2" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">2</div></div>
+					<div class="sorter-cell"><div class="content">厨房</div></div>
+					<div class="sorter-cell"><div class="content">厨房简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<div data-id="3" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">3</div></div>
+					<div class="sorter-cell"><div class="content">灯具</div></div>
+					<div class="sorter-cell"><div class="content">灯具简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<div data-id="4" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">4</div></div>
+					<div class="sorter-cell"><div class="content">五金</div></div>
+					<div class="sorter-cell"><div class="content">五金简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<div data-id="5" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">5</div></div>
+					<div class="sorter-cell"><div class="content">卧室</div></div>
+					<div class="sorter-cell"><div class="content">卧室简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<div data-id="6" class="sorter-row sorter-depth-0">
+				<div class="sorter-item">
+					<div class="sorter-cell"><div class="id">6</div></div>
+					<div class="sorter-cell"><div class="content">泳池</div></div>
+					<div class="sorter-cell"><div class="content">泳池简介</div></div>
+				</div>
+				<div class="sorter-sublist"></div>
+			</div>
+			<!-- <div data-id="6" class="sorter-row sorter-placeholder" style="height:32px;">
+				<div class="sorter-item"></div>
+			</div> -->
+		</div>
+	</div>
+
+
+</div>
+
+
+
+
+<script type="text/javascript" src="./sorter.js"></script>
+<script type="text/javascript">
+new Sorter('.sorter-body', {});
+</script>
+</body>
+</html>
