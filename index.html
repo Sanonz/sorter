@@ -10,6 +10,7 @@
 	<style type="text/css">
 	body{margin:0;padding:0;overflow-x:hidden;overflow-y:auto;}
 	.wrap{width:80%;margin:20px auto 0;}
+	.sorter{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;-o-user-select:none;user-select:none;}
 	.sorter-headline,.sorter-cell{width:33.3%;}
 	.id{padding-left:20px;}
 	.content{text-align:center;}
@@ -79,9 +80,6 @@
 				</div>
 				<div class="sorter-sublist"></div>
 			</div>
-			<!-- <div data-id="6" class="sorter-row sorter-placeholder" style="height:32px;">
-				<div class="sorter-item"></div>
-			</div> -->
 		</div>
 	</div>
 
@@ -93,7 +91,10 @@
 
 <script type="text/javascript" src="./sorter.js"></script>
 <script type="text/javascript">
-new Sorter('.sorter-body', {});
+var sort = Sorter('.sorter-body', {
+	vertical: true,
+	horizontal: true
+});
 </script>
 </body>
 </html>

@@ -13,14 +13,17 @@
 			vertical: true,//是否开启上下移动
 			horizontal: true,//是否开启左右移动
 			indentation: 30,//缩进距离(px)
-			maxDepth: 3,//向右移动的最大深度
+			// maxDepth: 3,//向右移动的最大深度
 			borderWidth: 2,//边框宽度
 			dataDepth: 'data-sorter-depth',
 			rowClassName: 'sorter-row',
 			depthClassName: 'sorter-depth-',
 			heplerClassName: 'sorter-helper',
 			sublistClassName: 'sorter-sublist',
-			placeholderClassName: 'sorter-placeholder'
+			placeholderClassName: 'sorter-placeholder',
+			onStart: null,//监听开始
+			onMove: null,//监听移动
+			onEnd: null//监听结束
 		}, options);
 
 		this.dragdrop = {
@@ -38,8 +41,15 @@
 			start: {x: 0, y: 0},
 			changed: {x: 0, y: 0},
 			position: {x: 0, y: 0},
-			indentation: {x: 0, y: 0}
+			indentation: {x: 0, y: 0},
+			onStart: [],
+			onMove: [],
+			onEnd: []
 		};
+
+		isFn(this.settings.onStart) && this.dragdrop.onStart.push(this.settings.onStart);
+		isFn(this.settings.onMove) && this.dragdrop.onStart.push(this.settings.onMove);
+		isFn(this.settings.onEnd) && this.dragdrop.onStart.push(this.settings.onEnd);
 		
 		this.init();
 	}, data = {events: {}};
@@ -114,6 +124,9 @@
 				self.depth(dragdrop.placeholder, dragdrop.depth.s);
 				insertAfter(dragdrop.target, dragdrop.placeholder);
 				self.setParentDepth();
+				for(var i = 0, len = dragdrop.onStart.length; i < len; i++){
+					dragdrop.onStart[i](e, dragdrop.target);
+				}
 			}, dragdrop.isTouch ? 1000 : 0);
 		},
 		dragdropMove: function(e){
@@ -134,48 +147,55 @@
 				left: dragdrop.position.x + 'px'
 			});
 
-			dragdrop.depth.e = Math.floor(dragdrop.indentation.x / this.settings.indentation);
-			depth = this.limitDepth(dragdrop.depth.s + dragdrop.depth.e);
-			this.depth(dragdrop.placeholder, depth);
+			if( this.settings.horizontal ){
+				dragdrop.depth.e = Math.floor(dragdrop.indentation.x / this.settings.indentation);
+				depth = this.limitDepth(dragdrop.depth.s + dragdrop.depth.e);
+				this.depth(dragdrop.placeholder, depth);
+			}
 
 			dragdrop.changed.x  = tx;
 			dragdrop.changed.y  = ty;
 
-			for(var i = 0, len = dragdrop.list.length; i < len; i++){
-				var elem = dragdrop.list[i], next, offsetC, offsetN, ch = 0, nh, tc;
-				if( elem === target[0] ) continue;
-				ch = elem.offsetHeight / 2;
-				offsetC = {top: elem.offsetTop, left: elem.offsetLeft};
-				tc = offsetC.top + ch;
+			if( this.settings.vertical ){
+				for(var i = 0, len = dragdrop.list.length; i < len; i++){
+					var elem = dragdrop.list[i], next, offsetC, offsetN, ch = 0, nh, tc;
+					if( elem === target[0] ) continue;
+					ch = elem.offsetHeight / 2;
+					offsetC = {top: elem.offsetTop, left: elem.offsetLeft};
+					tc = offsetC.top + ch;
 
-				next = dragdrop.list[i + 1];
-				if( next ){
-					offsetN = {top: next.offsetTop, left: next.offsetLeft};
-					nh = next.offsetHeight / 2;
-					if( y > 0 ){
-						if( tt > tc && tt < offsetN.top + nh ){
-							flag = 2;
+					next = dragdrop.list[i + 1];
+					if( next ){
+						offsetN = {top: next.offsetTop, left: next.offsetLeft};
+						nh = next.offsetHeight / 2;
+						if( y > 0 ){
+							if( tt > tc && tt < offsetN.top + nh ){
+								flag = 2;
+							}
+						} else {
+							if( offsetT.top > tc && offsetT.top < offsetN.top + nh ){
+								flag = 2;
+							} else if( tc > offsetT.top ){
+								flag = 1;
+							}
 						}
-					} else {
-						if( offsetT.top > tc && offsetT.top < offsetN.top + nh ){
-							flag = 2;
-						} else if( tc > offsetT.top ){
-							flag = 1;
-						}
+					} else if( tt > tc ){
+						flag = 2;
 					}
-				} else if( tt > tc ){
-					flag = 2;
-				}
 
-				if( flag == 1 ){
-					insertBefore(elem, dragdrop.placeholder);
-					this.setParentDepth();
-					break;
-				} else if( flag == 2 ){
-					insertAfter(elem, dragdrop.placeholder);
-					this.setParentDepth();
-					break;
+					if( flag == 1 ){
+						insertBefore(elem, dragdrop.placeholder);
+						this.setParentDepth();
+						break;
+					} else if( flag == 2 ){
+						insertAfter(elem, dragdrop.placeholder);
+						this.setParentDepth();
+						break;
+					}
 				}
+			}
+			for(var i = 0, len = dragdrop.onMove.length; i < len; i++){
+				dragdrop.onMove[i](e, target);
 			}
 		},
 		dragdropEnd: function(e){
@@ -203,6 +223,10 @@
 				width: ''
 			});
 			this.depth(dragdrop.target, depth);
+
+			for(var i = 0, len = dragdrop.onEnd.length; i < len; i++){
+				dragdrop.onEnd[i](e, dragdrop.target);
+			}
 		},
 		dragdropWheel: function(e){
 			this.dragdropMove(e);
@@ -235,14 +259,10 @@
 			} else {
 				depth = 0;
 			}
-			/*if( md != -1 && depth > md ){
-				depth = md;
-			}*/
-			// if( this.dragdrop.subitem.length == 0 && this.get )
 			return depth;
 		},
 		setParentDepth: function(){
-			var depth, prev = this.dragdrop.placeholder;
+			var depth;
 			depth = this.nearDetph(true);
 			return this.dragdrop.parentDepth = depth;
 		},
@@ -270,6 +290,14 @@
 				}
 			}
 			return result;
+		},
+		on: function(type, fn){
+			var dragdrop = this.dragdrop;
+			type = String(type);
+			type = 'on' + type.charAt(0).toUpperCase() + type.substring(1)
+			dragdrop[type] || (dragdrop[type] = []);
+			isFn(fn) && dragdrop[type].push(fn);
+			return this;
 		}
 	};
 
@@ -280,6 +308,10 @@
 			source.hasOwnProperty(i) && (target[i] = source[i]);
 		}
 		return target;
+	}
+
+	function isFn(fn){
+		return typeof fn === 'function';
 	}
 
 	function cleanSelection(){
@@ -446,20 +478,22 @@
 	}
 
 	function factory(body, options){
+		var instance = [];
 		body = String(body);
 		switch( body.charAt(0) )
 		{
 			case '.':
 				body = getElementByClassName(document.body, body.substr(1));
 				for(var i = 0, len = body.length; i < len; i++){
-					new Sorter(body[i], options);
+					instance.push(new Sorter(body[i], options));
 				}
 				break;
 			case '#':
 				body = document.getElementById(body.substr(1));
-				body && new Sorter(body, options);
+				body && instance.push(new Sorter(body, options));
 				break;
 		}
+		return instance;
 	}
 
 
