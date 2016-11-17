@@ -1,2 +1,2 @@
 # sorter
-排序插件
+http://sanonz.github.io/sorter/
