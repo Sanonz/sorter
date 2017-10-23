@@ -1,2 +1,2 @@
-# sorter
-Demo: http://sanonz.github.io/sorter/
+## Sorter
+[Demo](http://sanonz.github.io/sorter/)
